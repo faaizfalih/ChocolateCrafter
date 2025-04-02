@@ -17,7 +17,7 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden bg-white">
             <img
-              src={product.imageUrl}
+              src="/assets/matcha1.jpg"
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -37,7 +37,7 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden">
             <img
-              src={product.imageUrl}
+              src="/assets/matcha1.jpg"
               alt={product.name}
               className="w-full h-full object-cover transition-transform hover:scale-105"
             />
@@ -63,7 +63,7 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
             </span>
           )}
           <img
-            src={product.imageUrl}
+            src="/assets/matcha1.jpg"
             alt={product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
