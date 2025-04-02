@@ -11,14 +11,13 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
   const { addToCart } = useCart();
-
   if (variant === "minimal") {
     return (
       <div>
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden bg-white">
             <img
-              src= {getImageUrl(product.imageUrl)}
+              src={getImageUrl(product.imageUrl)}
               alt={product.name}
               className="w-full h-full object-cover"
             />
