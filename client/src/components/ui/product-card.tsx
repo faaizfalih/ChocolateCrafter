@@ -18,7 +18,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden bg-white">
             <img 
-              src={product.imageUrl} 
+              src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`} 
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -36,7 +36,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden">
             <img 
-              src={product.imageUrl} 
+              src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
               alt={product.name}
               className="w-full h-full object-cover transition-transform hover:scale-105"
             />
@@ -58,13 +58,8 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
               Best Seller
             </span>
           )}
-          {product.customizable && (
-            <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
-              Customisable
-            </span>
-          )}
           <img 
-            src={product.imageUrl} 
+            src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
             alt={product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
