@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Product } from '@shared/schema';
 import { useCart } from '@/context/cart-context';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getImageUrl } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +18,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden bg-white">
             <img 
-              src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`} 
+              src={getImageUrl(product.imageUrl)} 
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -36,7 +36,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden">
             <img 
-              src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
+              src={getImageUrl(product.imageUrl)}
               alt={product.name}
               className="w-full h-full object-cover transition-transform hover:scale-105"
             />
@@ -59,7 +59,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
             </span>
           )}
           <img 
-            src={product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}
+            src={getImageUrl(product.imageUrl)}
             alt={product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />

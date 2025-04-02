@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'wouter';
 import { Product } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getImageUrl } from '@/lib/utils';
 import { useState } from 'react';
 import { useCart } from '@/context/cart-context';
 import { Plus, Minus } from 'lucide-react';
@@ -17,8 +17,11 @@ const ProductPage = () => {
   
   const { data: productData, isLoading: productLoading } = useQuery<{ product: Product }>({
     queryKey: [`/api/products/slug/${params.id}`],
-    onError: () => {
-      navigate('/not-found');
+    // Use onSettled instead of onError
+    onSettled: (data, error) => {
+      if (error || !data) {
+        navigate('/not-found');
+      }
     }
   });
   
@@ -65,7 +68,7 @@ const ProductPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="aspect-square overflow-hidden">
           <img 
-            src={product.imageUrl} 
+            src={getImageUrl(product.imageUrl)} 
             alt={product.name}
             className="w-full h-full object-cover"
           />

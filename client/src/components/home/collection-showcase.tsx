@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Product } from '@shared/schema';
+import { getImageUrl } from '@/lib/utils';
 
 const CollectionShowcase = () => {
   const { data, isLoading, error } = useQuery<{ products: Product[] }>({
@@ -46,7 +47,7 @@ const CollectionShowcase = () => {
     <section className="relative">
       {/* Full-width background image */}
       <div className="w-full h-96 md:h-[500px] bg-cover bg-center relative" 
-           style={{ backgroundImage: `url(${featuredProduct?.imageUrl})` }}>
+           style={{ backgroundImage: `url(${featuredProduct ? getImageUrl(featuredProduct.imageUrl) : ''})` }}>
         
         {/* Overlay removed */}
         
@@ -66,7 +67,7 @@ const CollectionShowcase = () => {
             <div className="w-full md:w-1/3">
               <div className="aspect-square overflow-hidden rounded">
                 <img 
-                  src={featuredProduct?.imageUrl} 
+                  src={featuredProduct ? getImageUrl(featuredProduct.imageUrl) : ''} 
                   alt="Strawberry Sakura Shokupan" 
                   className="w-full h-full object-cover"
                 />

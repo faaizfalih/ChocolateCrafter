@@ -45,3 +45,11 @@ export function getDeliveryTime(): Date {
   
   return cutoffTime;
 }
+
+export function getImageUrl(path: string): string {
+  // Remove the leading slash if it exists
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  
+  // Handle spaces and special characters in the URL
+  return `/${encodeURIComponent(cleanPath)}`;
+}
