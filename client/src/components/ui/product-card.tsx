@@ -17,11 +17,10 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden bg-white">
             <img
-              src={product.imageUrl}
+              src={getImageUrl(product.imageUrl)}
               alt={product.name}
               className="w-full h-full object-cover"
             />
-            console.log(product.imageUrl); console.log(product.name);
           </div>
           <h3 className="font-medium text-sm md:text-base">{product.name}</h3>
           <p className="text-xs md:text-sm text-neutral-600">
@@ -38,7 +37,7 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
         <Link href={`/product/${product.slug}`}>
           <div className="mb-3 aspect-square overflow-hidden">
             <img
-              src={product.imageUrl}
+              src={getImageUrl(product.imageUrl)}
               alt={product.name}
               className="w-full h-full object-cover transition-transform hover:scale-105"
             />
@@ -64,7 +63,7 @@ const ProductCard = ({ product, variant = "default" }: ProductCardProps) => {
             </span>
           )}
           <img
-            src={`/assets${product.imageUrl}`}
+            src={getImageUrl(product.imageUrl)}
             alt={product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
