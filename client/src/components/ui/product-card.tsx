@@ -11,7 +11,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
   const { addToCart } = useCart();
-  
+
   if (variant === 'minimal') {
     return (
       <div>
@@ -29,7 +29,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
       </div>
     );
   }
-  
+
   if (variant === 'grid') {
     return (
       <div>
@@ -47,12 +47,22 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
       </div>
     );
   }
-  
+
   // Default variant
   return (
-    <div className="flex-shrink-0 w-full">
-      <Link href={`/product/${product.slug}`} className="block">
-        <div className="mb-3 md:mb-4 aspect-square overflow-hidden">
+    <div className="space-y-3">
+      <Link href={`/product?id=${product.id}`} className="block">
+        <div className="aspect-square overflow-hidden rounded-lg relative">
+          {product.bestSeller && (
+            <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
+              Best Seller
+            </span>
+          )}
+          {product.customizable && (
+            <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
+              Customisable
+            </span>
+          )}
           <img 
             src={product.imageUrl} 
             alt={product.name}
