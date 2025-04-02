@@ -48,8 +48,7 @@ const CollectionShowcase = () => {
       <div className="w-full h-96 md:h-[500px] bg-cover bg-center relative" 
            style={{ backgroundImage: `url(${featuredProduct?.imageUrl})` }}>
         
-        {/* Darkening overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        {/* Overlay removed */}
         
         {/* Overlay headline */}
         <div className="absolute inset-0 flex items-center justify-center">
