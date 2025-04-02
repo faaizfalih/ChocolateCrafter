@@ -185,13 +185,6 @@ export class MemStorage implements IStorage {
         bestSeller: false,
         seasonal: false,
         stock: 20,
-      }
-        imageUrl: "https://images.unsplash.com/photo-1587248720327-8eb72564be1a?auto=format&fit=crop&w=600&q=80",
-        category: "seasonal",
-        featured: false,
-        bestSeller: true,
-        seasonal: true,
-        stock: 10,
       },
       {
         name: "Yuzu Honey Shokupan",
