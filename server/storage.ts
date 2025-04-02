@@ -112,7 +112,7 @@ export class MemStorage implements IStorage {
         description:
           "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
         price: 42000,
-        imageUrl: "/public/assets/Hokkaido Milk1.jpg",
+        imageUrl: "/assets/Hokkaido Milk1.jpg",
         category: "signature",
         featured: true,
         bestSeller: true,
@@ -125,7 +125,7 @@ export class MemStorage implements IStorage {
         description:
           "Nutty, wholesome, and still cloud-soft. A nutritious twist on our signature texture.",
         price: 39000,
-        imageUrl: "/public/assets/Whole Wheat1.jpg",
+        imageUrl: "/assets/Whole Wheat1.jpg",
         category: "signature",
         featured: false,
         bestSeller: false,
@@ -139,7 +139,7 @@ export class MemStorage implements IStorage {
         description:
           "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "/public/assets/Matcha1.jpg",
+        imageUrl: "/assets/Matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
