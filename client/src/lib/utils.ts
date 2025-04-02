@@ -6,20 +6,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
 }
 
-export function getTimeRemaining(targetTime: Date): { hours: string, minutes: string, seconds: string } {
+export function getTimeRemaining(targetTime: Date): {
+  hours: string;
+  minutes: string;
+  seconds: string;
+} {
   const now = new Date();
   const diff = targetTime.getTime() - now.getTime();
 
   if (diff <= 0) {
-    return { hours: '00', minutes: '00', seconds: '00' };
+    return { hours: "00", minutes: "00", seconds: "00" };
   }
 
   const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -27,9 +31,9 @@ export function getTimeRemaining(targetTime: Date): { hours: string, minutes: st
   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
   return {
-    hours: hours.toString().padStart(2, '0'),
-    minutes: minutes.toString().padStart(2, '0'),
-    seconds: seconds.toString().padStart(2, '0'),
+    hours: hours.toString().padStart(2, "0"),
+    minutes: minutes.toString().padStart(2, "0"),
+    seconds: seconds.toString().padStart(2, "0"),
   };
 }
 
@@ -47,6 +51,6 @@ export function getDeliveryTime(): Date {
 }
 
 export function getImageUrl(path: string): string {
-  if (path.startsWith('http')) return path;
-  return path.startsWith('/') ? path : `/${path}`;
+  if (path.startsWith("http")) return path;
+  return path.startsWith("/") ? path : `/${path}`;
 }
