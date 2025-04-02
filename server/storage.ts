@@ -112,7 +112,7 @@ export class MemStorage implements IStorage {
         description:
           "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
         price: 42000,
-        imageUrl: "/Hokkaido Milk1.jpg",
+        imageUrl: "/assets/Hokkaido Milk1.jpg",
         category: "signature",
         featured: true,
         bestSeller: true,
@@ -125,7 +125,7 @@ export class MemStorage implements IStorage {
         description:
           "Nutty, wholesome, and still cloud-soft. A nutritious twist on our signature texture.",
         price: 39000,
-        imageUrl: "/Whole Wheat1.jpg",
+        imageUrl: "/assets/Whole Wheat1.jpg",
         category: "signature",
         featured: false,
         bestSeller: false,
@@ -152,7 +152,7 @@ export class MemStorage implements IStorage {
         description:
           "Rich cocoa, dark chocolate, and caramelized almond praline—our most decadent seasonal release.",
         price: 60000,
-        imageUrl: "/Matcha2.jpg",
+        imageUrl: "/assets/Matcha2.jpg",
         category: "flavored",
         featured: true,
         bestSeller: false,
@@ -166,7 +166,7 @@ export class MemStorage implements IStorage {
         description:
           "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Traditional square shokupan style.",
         price: 49000,
-        imageUrl: "/Sakura Strawberry1.jpg",
+        imageUrl: "/assets/Sakura Strawberry1.jpg",
         category: "sakura",
         featured: true,
         bestSeller: true,
@@ -179,7 +179,7 @@ export class MemStorage implements IStorage {
         description:
           "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Hand-twisted with an open swirl top.",
         price: 54000,
-        imageUrl: "/Sakura Strawberry5.jpg",
+        imageUrl: "/assets/Sakura Strawberry5.jpg",
         category: "sakura",
         featured: true,
         bestSeller: false,
@@ -193,7 +193,7 @@ export class MemStorage implements IStorage {
         description:
           "Creamy matcha meets sweet milk in this rich, aromatic spread made for our shokupan.",
         price: 114000,
-        imageUrl: "/General Photo3.jpg", // Using general photo as placeholder
+        imageUrl: "/assets/General Photo3.jpg", // Using general photo as placeholder
         category: "spreads",
         featured: false,
         bestSeller: false,
@@ -206,7 +206,7 @@ export class MemStorage implements IStorage {
         description:
           "Ciwidey strawberries preserved at peak ripeness—no preservatives, just pure fruit.",
         price: 72000,
-        imageUrl: "/Strawberry Jam1.jpg",
+        imageUrl: "/assets/Strawberry Jam1.jpg",
         category: "spreads",
         featured: false,
         bestSeller: false,
@@ -219,7 +219,7 @@ export class MemStorage implements IStorage {
         description:
           "Refreshing citrus yuzu-infused milk bread with a touch of natural honey. Bright and aromatic.",
         price: 80000,
-        imageUrl: "/General Photo5.jpg", // Using general photo as placeholder for Yuzu
+        imageUrl: "/assets/General Photo5.jpg", // Using general photo as placeholder for Yuzu
         category: "seasonal",
         featured: false,
         bestSeller: false,
@@ -233,7 +233,7 @@ export class MemStorage implements IStorage {
         description:
           "Roasted hojicha tea meets nutty black sesame in this sophisticated and aromatic shokupan.",
         price: 58000,
-        imageUrl: "/General Photo4.jpg", // Using general photo as placeholder
+        imageUrl: "/assets/General Photo4.jpg", // Using general photo as placeholder
         category: "flavored",
         featured: false,
         bestSeller: true,
@@ -247,7 +247,7 @@ export class MemStorage implements IStorage {
         description:
           "Two sizes of our signature all-natural strawberry jam in elegant packaging—perfect for gifting.",
         price: 160000,
-        imageUrl: "/Strawberry Jam2.jpg",
+        imageUrl: "/assets/Strawberry Jam2.jpg",
         category: "spreads",
         featured: true,
         bestSeller: false,
