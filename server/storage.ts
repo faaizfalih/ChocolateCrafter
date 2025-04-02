@@ -72,15 +72,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
     return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
@@ -90,17 +90,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProductById(id: number): Promise<Product | undefined> {
-    const [product] = await db.select().from(products).where(eq(products.id, id));
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(eq(products.id, id));
     return product;
   }
 
   async getProductBySlug(slug: string): Promise<Product | undefined> {
-    const [product] = await db.select().from(products).where(eq(products.slug, slug));
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(eq(products.slug, slug));
     return product;
   }
 
   async getProductsByCategory(category: string): Promise<Product[]> {
-    return await db.select().from(products).where(eq(products.category, category));
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.category, category));
   }
 
   async getFeaturedProducts(): Promise<Product[]> {
@@ -108,7 +117,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBestSellerProducts(): Promise<Product[]> {
-    return await db.select().from(products).where(eq(products.bestSeller, true));
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.bestSeller, true));
   }
 
   async getSeasonalProducts(): Promise<Product[]> {
@@ -146,23 +158,20 @@ export class DatabaseStorage implements IStorage {
   // Order operations
   async createOrder(
     insertOrder: InsertOrder,
-    insertItems: InsertOrderItem[]
+    insertItems: InsertOrderItem[],
   ): Promise<Order> {
     // First create the order
-    const [order] = await db
-      .insert(orders)
-      .values(insertOrder)
-      .returning();
-    
+    const [order] = await db.insert(orders).values(insertOrder).returning();
+
     // Then create all order items
     if (insertItems.length > 0) {
-      const items = insertItems.map(item => ({
+      const items = insertItems.map((item) => ({
         ...item,
-        orderId: order.id
+        orderId: order.id,
       }));
       await db.insert(orderItems).values(items);
     }
-    
+
     return order;
   }
 
@@ -172,12 +181,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
-    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+    return await db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, orderId));
   }
 
   // Corporate inquiries
   async createCorporateInquiry(
-    inquiry: InsertCorporateInquiry
+    inquiry: InsertCorporateInquiry,
   ): Promise<CorporateInquiry> {
     const [corporateInquiry] = await db
       .insert(corporateInquiries)
@@ -292,7 +304,7 @@ export class MemStorage implements IStorage {
         description:
           "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "matcha1.jpg",
+        imageUrl: "/attached_assets/matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
