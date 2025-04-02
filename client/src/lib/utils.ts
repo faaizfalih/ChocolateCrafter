@@ -51,9 +51,25 @@ export function getDeliveryTime(): Date {
 }
 
 export function getImageUrl(path: string): string {
+  if (!path) return '';
+  
+  // Check if the URL is already an absolute URL (starting with http:// or https://)
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  
+  // Handle paths with attached_assets prefix
+  if (path.includes('attached_assets/')) {
+    const fileName = path.split('/').pop();
+    return `/attached_assets/${encodeURIComponent(fileName || '')}`;
+  }
+  
+  // Handle traditional asset paths
   if (path.startsWith("/public/assets/")) return path.replace("/public", "");
   if (path.startsWith("public/assets/")) return `/${path.replace("public/", "")}`;
   if (path.startsWith("/assets/")) return path;
   if (path.startsWith("assets/")) return `/${path}`;
-  return `/assets/${path}`;
+  
+  // Default case: Add assets prefix
+  return `/attached_assets/${encodeURIComponent(path)}`;
 }

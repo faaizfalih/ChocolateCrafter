@@ -1,5 +1,6 @@
-import { pgTable, text, serial, integer, boolean, timestamp, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, uniqueIndex, jsonb, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 // Product Schema
@@ -17,6 +18,11 @@ export const products = pgTable("products", {
   stock: integer("stock").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+// Define the product relations
+export const productsRelations = relations(products, ({ many }) => ({
+  orderItems: many(orderItems),
+}));
 
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
@@ -37,6 +43,11 @@ export const orders = pgTable("orders", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Define the order relations
+export const ordersRelations = relations(orders, ({ many }) => ({
+  orderItems: many(orderItems),
+}));
+
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   status: true,
@@ -46,11 +57,23 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 // Order Items Schema
 export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id").notNull(),
-  productId: integer("product_id").notNull(),
+  orderId: integer("order_id").notNull().references(() => orders.id),
+  productId: integer("product_id").notNull().references(() => products.id),
   quantity: integer("quantity").notNull(),
   price: integer("price").notNull(),
 });
+
+// Define the order items relations
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
+}));
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,

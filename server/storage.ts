@@ -21,6 +21,8 @@ import {
   type Newsletter,
   type InsertNewsletter,
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (from template)
@@ -61,6 +63,157 @@ export interface IStorage {
   isEmailSubscribed(email: string): Promise<boolean>;
 }
 
+// Database implementation
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  // Product operations
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getProductById(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product;
+  }
+
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.slug, slug));
+    return product;
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.category, category));
+  }
+
+  async getFeaturedProducts(): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.featured, true));
+  }
+
+  async getBestSellerProducts(): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.bestSeller, true));
+  }
+
+  async getSeasonalProducts(): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.seasonal, true));
+  }
+
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db
+      .insert(products)
+      .values(insertProduct)
+      .returning();
+    return product;
+  }
+
+  async updateProduct(
+    id: number,
+    product: Partial<InsertProduct>,
+  ): Promise<Product | undefined> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set(product)
+      .where(eq(products.id, id))
+      .returning();
+    return updatedProduct;
+  }
+
+  async deleteProduct(id: number): Promise<boolean> {
+    const result = await db
+      .delete(products)
+      .where(eq(products.id, id))
+      .returning({ id: products.id });
+    return result.length > 0;
+  }
+
+  // Order operations
+  async createOrder(
+    insertOrder: InsertOrder,
+    insertItems: InsertOrderItem[]
+  ): Promise<Order> {
+    // First create the order
+    const [order] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
+    
+    // Then create all order items
+    if (insertItems.length > 0) {
+      const items = insertItems.map(item => ({
+        ...item,
+        orderId: order.id
+      }));
+      await db.insert(orderItems).values(items);
+    }
+    
+    return order;
+  }
+
+  async getOrderById(id: number): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order;
+  }
+
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+  }
+
+  // Corporate inquiries
+  async createCorporateInquiry(
+    inquiry: InsertCorporateInquiry
+  ): Promise<CorporateInquiry> {
+    const [corporateInquiry] = await db
+      .insert(corporateInquiries)
+      .values(inquiry)
+      .returning();
+    return corporateInquiry;
+  }
+
+  // Contact form
+  async createContactForm(form: InsertContactForm): Promise<ContactForm> {
+    const [contactForm] = await db
+      .insert(contactForms)
+      .values(form)
+      .returning();
+    return contactForm;
+  }
+
+  // Newsletter subscription
+  async createNewsletter(newsletter: InsertNewsletter): Promise<Newsletter> {
+    const [newsletterEntry] = await db
+      .insert(newsletters)
+      .values(newsletter)
+      .returning();
+    return newsletterEntry;
+  }
+
+  async isEmailSubscribed(email: string): Promise<boolean> {
+    const [entry] = await db
+      .select({ id: newsletters.id })
+      .from(newsletters)
+      .where(eq(newsletters.email, email));
+    return !!entry;
+  }
+}
+
+// Memory storage implementation for fallback
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private products: Map<number, Product>;
@@ -139,7 +292,7 @@ export class MemStorage implements IStorage {
         description:
           "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "/assets/Matcha1.jpg",
+        imageUrl: "matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
@@ -152,7 +305,7 @@ export class MemStorage implements IStorage {
         description:
           "Rich cocoa, dark chocolate, and caramelized almond praline—our most decadent seasonal release.",
         price: 60000,
-        imageUrl: "/assets/Matcha2.jpg",
+        imageUrl: "matcha2.jpg",
         category: "flavored",
         featured: true,
         bestSeller: false,
@@ -482,4 +635,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
