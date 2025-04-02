@@ -1,11 +1,25 @@
 import {
-  users, type User, type InsertUser,
-  products, type Product, type InsertProduct,
-  orders, type Order, type InsertOrder,
-  orderItems, type OrderItem, type InsertOrderItem,
-  corporateInquiries, type CorporateInquiry, type InsertCorporateInquiry,
-  contactForms, type ContactForm, type InsertContactForm,
-  newsletters, type Newsletter, type InsertNewsletter,
+  users,
+  type User,
+  type InsertUser,
+  products,
+  type Product,
+  type InsertProduct,
+  orders,
+  type Order,
+  type InsertOrder,
+  orderItems,
+  type OrderItem,
+  type InsertOrderItem,
+  corporateInquiries,
+  type CorporateInquiry,
+  type InsertCorporateInquiry,
+  contactForms,
+  type ContactForm,
+  type InsertContactForm,
+  newsletters,
+  type Newsletter,
+  type InsertNewsletter,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -23,20 +37,25 @@ export interface IStorage {
   getBestSellerProducts(): Promise<Product[]>;
   getSeasonalProducts(): Promise<Product[]>;
   createProduct(product: InsertProduct): Promise<Product>;
-  updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined>;
+  updateProduct(
+    id: number,
+    product: Partial<InsertProduct>,
+  ): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
 
   // Order operations
   createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
   getOrderById(id: number): Promise<Order | undefined>;
   getOrderItems(orderId: number): Promise<OrderItem[]>;
-  
+
   // Corporate inquiries
-  createCorporateInquiry(inquiry: InsertCorporateInquiry): Promise<CorporateInquiry>;
-  
+  createCorporateInquiry(
+    inquiry: InsertCorporateInquiry,
+  ): Promise<CorporateInquiry>;
+
   // Contact form
   createContactForm(form: InsertContactForm): Promise<ContactForm>;
-  
+
   // Newsletter subscription
   createNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
   isEmailSubscribed(email: string): Promise<boolean>;
@@ -52,7 +71,7 @@ export class MemStorage implements IStorage {
   private contactForms: Map<number, ContactForm>;
   private newsletters: Map<number, Newsletter>;
   private emailsSubscribed: Set<string>;
-  
+
   currentUserId: number;
   currentProductId: number;
   currentOrderId: number;
@@ -71,7 +90,7 @@ export class MemStorage implements IStorage {
     this.contactForms = new Map();
     this.newsletters = new Map();
     this.emailsSubscribed = new Set();
-    
+
     this.currentUserId = 1;
     this.currentProductId = 1;
     this.currentOrderId = 1;
@@ -79,18 +98,19 @@ export class MemStorage implements IStorage {
     this.currentInquiryId = 1;
     this.currentContactFormId = 1;
     this.currentNewsletterId = 1;
-    
+
     // Initialize with sample products
     this.initializeProducts();
   }
-  
+
   private initializeProducts() {
     const sampleProducts: InsertProduct[] = [
       // Signature Category
       {
         name: "Hokkaido Milk Shokupan",
         slug: "hokkaido-milk-shokupan",
-        description: "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
+        description:
+          "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
         price: 42000,
         imageUrl: "/Hokkaido Milk1.jpg",
         category: "signature",
@@ -102,7 +122,8 @@ export class MemStorage implements IStorage {
       {
         name: "Whole Wheat Shokupan",
         slug: "whole-wheat-shokupan",
-        description: "Nutty, wholesome, and still cloud-soft. A nutritious twist on our signature texture.",
+        description:
+          "Nutty, wholesome, and still cloud-soft. A nutritious twist on our signature texture.",
         price: 39000,
         imageUrl: "/Whole Wheat1.jpg",
         category: "signature",
@@ -115,9 +136,10 @@ export class MemStorage implements IStorage {
       {
         name: "Matcha White Chocolate Shokupan",
         slug: "matcha-white-chocolate-shokupan",
-        description: "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
+        description:
+          "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "/Matcha1.jpg",
+        imageUrl: "/assets/Matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
@@ -127,9 +149,10 @@ export class MemStorage implements IStorage {
       {
         name: "Dark Chocolate Almond Caramel Shokupan",
         slug: "dark-chocolate-almond-caramel-shokupan",
-        description: "Rich cocoa, dark chocolate, and caramelized almond praline—our most decadent seasonal release.",
+        description:
+          "Rich cocoa, dark chocolate, and caramelized almond praline—our most decadent seasonal release.",
         price: 60000,
-        imageUrl: "/Matcha2.jpg", 
+        imageUrl: "/Matcha2.jpg",
         category: "flavored",
         featured: true,
         bestSeller: false,
@@ -140,7 +163,8 @@ export class MemStorage implements IStorage {
       {
         name: "Sakura Strawberry Anshokupan (Classic)",
         slug: "sakura-strawberry-anshokupan-classic",
-        description: "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Traditional square shokupan style.",
+        description:
+          "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Traditional square shokupan style.",
         price: 49000,
         imageUrl: "/Sakura Strawberry1.jpg",
         category: "sakura",
@@ -152,7 +176,8 @@ export class MemStorage implements IStorage {
       {
         name: "Sakura Strawberry Anshokupan (Yamagata)",
         slug: "sakura-strawberry-anshokupan-yamagata",
-        description: "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Hand-twisted with an open swirl top.",
+        description:
+          "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Hand-twisted with an open swirl top.",
         price: 54000,
         imageUrl: "/Sakura Strawberry5.jpg",
         category: "sakura",
@@ -165,7 +190,8 @@ export class MemStorage implements IStorage {
       {
         name: "Matcha Milk Jam",
         slug: "matcha-milk-jam",
-        description: "Creamy matcha meets sweet milk in this rich, aromatic spread made for our shokupan.",
+        description:
+          "Creamy matcha meets sweet milk in this rich, aromatic spread made for our shokupan.",
         price: 114000,
         imageUrl: "/General Photo3.jpg", // Using general photo as placeholder
         category: "spreads",
@@ -177,7 +203,8 @@ export class MemStorage implements IStorage {
       {
         name: "All-Natural Strawberry Jam",
         slug: "all-natural-strawberry-jam",
-        description: "Ciwidey strawberries preserved at peak ripeness—no preservatives, just pure fruit.",
+        description:
+          "Ciwidey strawberries preserved at peak ripeness—no preservatives, just pure fruit.",
         price: 72000,
         imageUrl: "/Strawberry Jam1.jpg",
         category: "spreads",
@@ -189,7 +216,8 @@ export class MemStorage implements IStorage {
       {
         name: "Yuzu Honey Shokupan",
         slug: "yuzu-honey-shokupan",
-        description: "Refreshing citrus yuzu-infused milk bread with a touch of natural honey. Bright and aromatic.",
+        description:
+          "Refreshing citrus yuzu-infused milk bread with a touch of natural honey. Bright and aromatic.",
         price: 80000,
         imageUrl: "/General Photo5.jpg", // Using general photo as placeholder for Yuzu
         category: "seasonal",
@@ -202,7 +230,8 @@ export class MemStorage implements IStorage {
       {
         name: "Hojicha Black Sesame Shokupan",
         slug: "hojicha-black-sesame-shokupan",
-        description: "Roasted hojicha tea meets nutty black sesame in this sophisticated and aromatic shokupan.",
+        description:
+          "Roasted hojicha tea meets nutty black sesame in this sophisticated and aromatic shokupan.",
         price: 58000,
         imageUrl: "/General Photo4.jpg", // Using general photo as placeholder
         category: "flavored",
@@ -215,7 +244,8 @@ export class MemStorage implements IStorage {
       {
         name: "Premium Strawberry Jam Gift Set",
         slug: "premium-strawberry-jam-gift-set",
-        description: "Two sizes of our signature all-natural strawberry jam in elegant packaging—perfect for gifting.",
+        description:
+          "Two sizes of our signature all-natural strawberry jam in elegant packaging—perfect for gifting.",
         price: 160000,
         imageUrl: "/Strawberry Jam2.jpg",
         category: "spreads",
@@ -223,10 +253,10 @@ export class MemStorage implements IStorage {
         bestSeller: false,
         seasonal: false,
         stock: 15,
-      }
+      },
     ];
-    
-    sampleProducts.forEach(product => this.createProduct(product));
+
+    sampleProducts.forEach((product) => this.createProduct(product));
   }
 
   // User operations (from template)
@@ -246,50 +276,50 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
-  
+
   // Product operations
   async getAllProducts(): Promise<Product[]> {
     return Array.from(this.products.values());
   }
-  
+
   async getProductById(id: number): Promise<Product | undefined> {
     return this.products.get(id);
   }
-  
+
   async getProductBySlug(slug: string): Promise<Product | undefined> {
     const productId = this.productSlugs.get(slug);
     if (!productId) return undefined;
     return this.products.get(productId);
   }
-  
+
   async getProductsByCategory(category: string): Promise<Product[]> {
     return Array.from(this.products.values()).filter(
-      product => product.category === category
+      (product) => product.category === category,
     );
   }
-  
+
   async getFeaturedProducts(): Promise<Product[]> {
     return Array.from(this.products.values()).filter(
-      product => product.featured
+      (product) => product.featured,
     );
   }
-  
+
   async getBestSellerProducts(): Promise<Product[]> {
     return Array.from(this.products.values()).filter(
-      product => product.bestSeller
+      (product) => product.bestSeller,
     );
   }
-  
+
   async getSeasonalProducts(): Promise<Product[]> {
     return Array.from(this.products.values()).filter(
-      product => product.seasonal
+      (product) => product.seasonal,
     );
   }
-  
+
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = this.currentProductId++;
     const now = new Date();
-    
+
     // Explicitly handle all required fields to avoid type issues
     const product: Product = {
       id,
@@ -303,44 +333,50 @@ export class MemStorage implements IStorage {
       bestSeller: insertProduct.bestSeller ?? false,
       seasonal: insertProduct.seasonal ?? false,
       stock: insertProduct.stock ?? 0,
-      createdAt: now
+      createdAt: now,
     };
-    
+
     this.products.set(id, product);
     this.productSlugs.set(product.slug, id);
-    
+
     return product;
   }
-  
-  async updateProduct(id: number, update: Partial<InsertProduct>): Promise<Product | undefined> {
+
+  async updateProduct(
+    id: number,
+    update: Partial<InsertProduct>,
+  ): Promise<Product | undefined> {
     const product = this.products.get(id);
     if (!product) return undefined;
-    
+
     // Update slug mapping if slug is changing
     if (update.slug && update.slug !== product.slug) {
       this.productSlugs.delete(product.slug);
       this.productSlugs.set(update.slug, id);
     }
-    
+
     const updatedProduct = { ...product, ...update };
     this.products.set(id, updatedProduct);
-    
+
     return updatedProduct;
   }
-  
+
   async deleteProduct(id: number): Promise<boolean> {
     const product = this.products.get(id);
     if (!product) return false;
-    
+
     this.productSlugs.delete(product.slug);
     return this.products.delete(id);
   }
-  
+
   // Order operations
-  async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+  async createOrder(
+    insertOrder: InsertOrder,
+    items: InsertOrderItem[],
+  ): Promise<Order> {
     const id = this.currentOrderId++;
     const now = new Date();
-    
+
     // Explicitly handle all required fields to avoid type issues
     const order: Order = {
       id,
@@ -352,38 +388,40 @@ export class MemStorage implements IStorage {
       postalCode: insertOrder.postalCode,
       total: insertOrder.total,
       status: "pending",
-      createdAt: now
+      createdAt: now,
     };
-    
+
     this.orders.set(id, order);
-    
+
     // Create order items
-    const orderItems: OrderItem[] = items.map(item => ({
+    const orderItems: OrderItem[] = items.map((item) => ({
       id: this.currentOrderItemId++,
       orderId: id,
       productId: item.productId,
       quantity: item.quantity,
-      price: item.price
+      price: item.price,
     }));
-    
+
     this.orderItems.set(id, orderItems);
-    
+
     return order;
   }
-  
+
   async getOrderById(id: number): Promise<Order | undefined> {
     return this.orders.get(id);
   }
-  
+
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
     return this.orderItems.get(orderId) || [];
   }
-  
+
   // Corporate inquiries
-  async createCorporateInquiry(inquiry: InsertCorporateInquiry): Promise<CorporateInquiry> {
+  async createCorporateInquiry(
+    inquiry: InsertCorporateInquiry,
+  ): Promise<CorporateInquiry> {
     const id = this.currentInquiryId++;
     const now = new Date();
-    
+
     // Explicitly handle all required fields
     const corporateInquiry: CorporateInquiry = {
       id,
@@ -393,19 +431,19 @@ export class MemStorage implements IStorage {
       phone: inquiry.phone,
       message: inquiry.message,
       quantity: inquiry.quantity ?? null,
-      createdAt: now
+      createdAt: now,
     };
-    
+
     this.corporateInquiries.set(id, corporateInquiry);
-    
+
     return corporateInquiry;
   }
-  
+
   // Contact form
   async createContactForm(form: InsertContactForm): Promise<ContactForm> {
     const id = this.currentContactFormId++;
     const now = new Date();
-    
+
     // Explicitly handle all required fields
     const contactForm: ContactForm = {
       id,
@@ -413,32 +451,32 @@ export class MemStorage implements IStorage {
       email: form.email,
       subject: form.subject,
       message: form.message,
-      createdAt: now
+      createdAt: now,
     };
-    
+
     this.contactForms.set(id, contactForm);
-    
+
     return contactForm;
   }
-  
+
   // Newsletter subscription
   async createNewsletter(newsletter: InsertNewsletter): Promise<Newsletter> {
     const id = this.currentNewsletterId++;
     const now = new Date();
-    
+
     // Explicitly handle all required fields
     const newsletterEntry: Newsletter = {
       id,
       email: newsletter.email,
-      createdAt: now
+      createdAt: now,
     };
-    
+
     this.newsletters.set(id, newsletterEntry);
     this.emailsSubscribed.add(newsletter.email);
-    
+
     return newsletterEntry;
   }
-  
+
   async isEmailSubscribed(email: string): Promise<boolean> {
     return this.emailsSubscribed.has(email);
   }
