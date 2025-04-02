@@ -139,7 +139,7 @@ export class MemStorage implements IStorage {
         description:
           "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "/assets/Matcha1.jpg",
+        imageUrl: "/Matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
