@@ -59,7 +59,7 @@ const ProductCard = ({ product, variant = 'default' }: ProductCardProps) => {
             </span>
           )}
           <img 
-            src={getImageUrl(product.imageUrl)}
+            src={`/assets${product.imageUrl}`}
             alt={product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />

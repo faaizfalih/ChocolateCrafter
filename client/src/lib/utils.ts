@@ -46,9 +46,7 @@ export function getDeliveryTime(): Date {
   return cutoffTime;
 }
 
-export function getImageUrl(url: string): string {
-  if (url.startsWith('/')) {
-    return `/assets${url}`;
-  }
-  return `/assets/${url}`;
+export function getImageUrl(path: string): string {
+  if (path.startsWith('http')) return path;
+  return path.startsWith('/') ? path : `/${path}`;
 }

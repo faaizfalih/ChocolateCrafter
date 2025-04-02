@@ -92,7 +92,7 @@ export class MemStorage implements IStorage {
         slug: "hokkaido-milk-shokupan",
         description: "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
         price: 42000,
-        imageUrl: "Hokkaido Milk1.jpg",
+        imageUrl: "/Hokkaido Milk1.jpg",
         category: "signature",
         featured: true,
         bestSeller: true,
