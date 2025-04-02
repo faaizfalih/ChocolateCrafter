@@ -81,7 +81,11 @@ const CollectionShowcase = () => {
               </p>
               <Button 
                 className="bg-primary text-white hover:bg-[#E09E69] transition-colors px-6 py-3 text-sm md:text-base font-medium"
-                onClick={() => featuredProduct && window.location.href = `/product?id=${featuredProduct.id}`}
+                onClick={() => {
+                  if (featuredProduct) {
+                    window.location.href = `/product?id=${featuredProduct.id}`;
+                  }
+                }}
               >
                 Order Now
               </Button>
