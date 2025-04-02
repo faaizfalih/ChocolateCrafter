@@ -92,7 +92,7 @@ export class MemStorage implements IStorage {
         slug: "hokkaido-milk-shokupan",
         description: "Our classic loaf—pillowy-soft and deeply umami, made with Hokkaido milk and Japanese flour.",
         price: 42000,
-        imageUrl: "https://images.unsplash.com/photo-1586765501663-0ae193335182?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Hokkaido Milk1.jpg",
         category: "signature",
         featured: true,
         bestSeller: true,
@@ -104,7 +104,7 @@ export class MemStorage implements IStorage {
         slug: "whole-wheat-shokupan",
         description: "Nutty, wholesome, and still cloud-soft. A nutritious twist on our signature texture.",
         price: 39000,
-        imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Whole Wheat1.jpg",
         category: "signature",
         featured: false,
         bestSeller: false,
@@ -117,7 +117,7 @@ export class MemStorage implements IStorage {
         slug: "matcha-white-chocolate-shokupan",
         description: "Earthy matcha swirled with ribbons of creamy white chocolate—balanced and indulgent.",
         price: 59000,
-        imageUrl: "https://images.unsplash.com/photo-1551975632-c88c9af930e4?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Matcha1.jpg",
         category: "flavored",
         featured: true,
         bestSeller: true,
@@ -129,7 +129,7 @@ export class MemStorage implements IStorage {
         slug: "dark-chocolate-almond-caramel-shokupan",
         description: "Rich cocoa, dark chocolate, and caramelized almond praline—our most decadent seasonal release.",
         price: 60000,
-        imageUrl: "https://images.unsplash.com/photo-1600326145359-3a44909d1a39?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Matcha2.jpg", 
         category: "flavored",
         featured: true,
         bestSeller: false,
@@ -142,7 +142,7 @@ export class MemStorage implements IStorage {
         slug: "sakura-strawberry-anshokupan-classic",
         description: "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Traditional square shokupan style.",
         price: 49000,
-        imageUrl: "https://images.unsplash.com/photo-1587248720327-8eb72564be1a?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Sakura Strawberry1.jpg",
         category: "sakura",
         featured: true,
         bestSeller: true,
@@ -154,7 +154,7 @@ export class MemStorage implements IStorage {
         slug: "sakura-strawberry-anshokupan-yamagata",
         description: "Strawberries from Ciwidey and red bean paste meet in a soft, sakura-infused loaf. Hand-twisted with an open swirl top.",
         price: 54000,
-        imageUrl: "https://images.unsplash.com/photo-1570145820259-b5b80c5c8bd6?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Sakura Strawberry5.jpg",
         category: "sakura",
         featured: true,
         bestSeller: false,
@@ -167,7 +167,7 @@ export class MemStorage implements IStorage {
         slug: "matcha-milk-jam",
         description: "Creamy matcha meets sweet milk in this rich, aromatic spread made for our shokupan.",
         price: 114000,
-        imageUrl: "https://images.unsplash.com/photo-1570145820259-b5b80c5c8bd6?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/General Photo3.jpg", // Using general photo as placeholder
         category: "spreads",
         featured: false,
         bestSeller: false,
@@ -179,7 +179,7 @@ export class MemStorage implements IStorage {
         slug: "all-natural-strawberry-jam",
         description: "Ciwidey strawberries preserved at peak ripeness—no preservatives, just pure fruit.",
         price: 72000,
-        imageUrl: "https://images.unsplash.com/photo-1570145820259-b5b80c5c8bd6?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/Strawberry Jam1.jpg",
         category: "spreads",
         featured: false,
         bestSeller: false,
@@ -191,12 +191,38 @@ export class MemStorage implements IStorage {
         slug: "yuzu-honey-shokupan",
         description: "Refreshing citrus yuzu-infused milk bread with a touch of natural honey. Bright and aromatic.",
         price: 80000,
-        imageUrl: "https://images.unsplash.com/photo-1570145820259-b5b80c5c8bd6?auto=format&fit=crop&w=600&q=80",
+        imageUrl: "/assets/General Photo5.jpg", // Using general photo as placeholder for Yuzu
         category: "seasonal",
         featured: false,
         bestSeller: false,
         seasonal: true,
         stock: 8,
+      },
+      // Add Hojicha variant
+      {
+        name: "Hojicha Black Sesame Shokupan",
+        slug: "hojicha-black-sesame-shokupan",
+        description: "Roasted hojicha tea meets nutty black sesame in this sophisticated and aromatic shokupan.",
+        price: 58000,
+        imageUrl: "/assets/General Photo4.jpg", // Using general photo as placeholder
+        category: "flavored",
+        featured: false,
+        bestSeller: true,
+        seasonal: true,
+        stock: 10,
+      },
+      // Add Strawberry Jam Gift Set
+      {
+        name: "Premium Strawberry Jam Gift Set",
+        slug: "premium-strawberry-jam-gift-set",
+        description: "Two sizes of our signature all-natural strawberry jam in elegant packaging—perfect for gifting.",
+        price: 160000,
+        imageUrl: "/assets/Strawberry Jam2.jpg",
+        category: "spreads",
+        featured: true,
+        bestSeller: false,
+        seasonal: false,
+        stock: 15,
       }
     ];
     
@@ -264,10 +290,20 @@ export class MemStorage implements IStorage {
     const id = this.currentProductId++;
     const now = new Date();
     
+    // Explicitly handle all required fields to avoid type issues
     const product: Product = {
-      ...insertProduct,
       id,
-      createdAt: now,
+      name: insertProduct.name,
+      slug: insertProduct.slug,
+      description: insertProduct.description,
+      price: insertProduct.price,
+      imageUrl: insertProduct.imageUrl,
+      category: insertProduct.category,
+      featured: insertProduct.featured ?? false,
+      bestSeller: insertProduct.bestSeller ?? false,
+      seasonal: insertProduct.seasonal ?? false,
+      stock: insertProduct.stock ?? 0,
+      createdAt: now
     };
     
     this.products.set(id, product);
@@ -305,20 +341,29 @@ export class MemStorage implements IStorage {
     const id = this.currentOrderId++;
     const now = new Date();
     
+    // Explicitly handle all required fields to avoid type issues
     const order: Order = {
-      ...insertOrder,
       id,
+      customerName: insertOrder.customerName,
+      customerEmail: insertOrder.customerEmail,
+      customerPhone: insertOrder.customerPhone,
+      shippingAddress: insertOrder.shippingAddress,
+      city: insertOrder.city,
+      postalCode: insertOrder.postalCode,
+      total: insertOrder.total,
       status: "pending",
-      createdAt: now,
+      createdAt: now
     };
     
     this.orders.set(id, order);
     
     // Create order items
     const orderItems: OrderItem[] = items.map(item => ({
-      ...item,
       id: this.currentOrderItemId++,
       orderId: id,
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price
     }));
     
     this.orderItems.set(id, orderItems);
@@ -339,10 +384,16 @@ export class MemStorage implements IStorage {
     const id = this.currentInquiryId++;
     const now = new Date();
     
+    // Explicitly handle all required fields
     const corporateInquiry: CorporateInquiry = {
-      ...inquiry,
       id,
-      createdAt: now,
+      name: inquiry.name,
+      email: inquiry.email,
+      company: inquiry.company,
+      phone: inquiry.phone,
+      message: inquiry.message,
+      quantity: inquiry.quantity ?? null,
+      createdAt: now
     };
     
     this.corporateInquiries.set(id, corporateInquiry);
@@ -355,10 +406,14 @@ export class MemStorage implements IStorage {
     const id = this.currentContactFormId++;
     const now = new Date();
     
+    // Explicitly handle all required fields
     const contactForm: ContactForm = {
-      ...form,
       id,
-      createdAt: now,
+      name: form.name,
+      email: form.email,
+      subject: form.subject,
+      message: form.message,
+      createdAt: now
     };
     
     this.contactForms.set(id, contactForm);
@@ -371,10 +426,11 @@ export class MemStorage implements IStorage {
     const id = this.currentNewsletterId++;
     const now = new Date();
     
+    // Explicitly handle all required fields
     const newsletterEntry: Newsletter = {
-      ...newsletter,
       id,
-      createdAt: now,
+      email: newsletter.email,
+      createdAt: now
     };
     
     this.newsletters.set(id, newsletterEntry);
