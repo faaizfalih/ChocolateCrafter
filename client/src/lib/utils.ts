@@ -17,7 +17,7 @@ export function formatPrice(price: number): string {
 export function getTimeRemaining(targetTime: Date): { hours: string, minutes: string, seconds: string } {
   const now = new Date();
   const diff = targetTime.getTime() - now.getTime();
-  
+
   if (diff <= 0) {
     return { hours: '00', minutes: '00', seconds: '00' };
   }
@@ -37,19 +37,16 @@ export function getDeliveryTime(): Date {
   const now = new Date();
   const cutoffTime = new Date();
   cutoffTime.setHours(16, 0, 0, 0); // 4 PM
-  
+
   if (now >= cutoffTime) {
     // If current time is after 4 PM, set cutoff to tomorrow 4 PM
     cutoffTime.setDate(cutoffTime.getDate() + 1);
   }
-  
+
   return cutoffTime;
 }
 
 export function getImageUrl(path: string): string {
-  // Remove the leading slash if it exists
-  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-  
-  // Handle spaces and special characters in the URL
-  return `/${encodeURIComponent(cleanPath)}`;
+  if (path.startsWith('http')) return path;
+  return path.startsWith('/') ? path : `/${path}`;
 }
