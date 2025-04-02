@@ -51,6 +51,8 @@ export function getDeliveryTime(): Date {
 }
 
 export function getImageUrl(path: string): string {
+  if (path.startsWith("/public/assets/")) return path.replace("/public", "");
+  if (path.startsWith("public/assets/")) return `/${path.replace("public/", "")}`;
   if (path.startsWith("/assets/")) return path;
   if (path.startsWith("assets/")) return `/${path}`;
   return `/assets/${path}`;
