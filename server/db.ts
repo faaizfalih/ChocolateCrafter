@@ -1,14 +1,9 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { drizzle as drizzleNode } from 'drizzle-orm/node-postgres';
-import ws from "ws";
+import pg from 'pg';
+const { Pool } = pg;
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 import * as fs from 'fs';
 import * as path from 'path';
-
-// Only configure WebSocket for Neon connections
-// Don't configure WebSocket for local connections to avoid errors
-// neonConfig.webSocketConstructor = ws;
 
 // Simple dummy object to use when no database is available
 const dummyDb = {
@@ -52,53 +47,43 @@ if (!databaseUrl && !process.env.DATABASE_URL) {
   console.log(`Connecting to database: ${connectionString.split('@')[1]}`);
   
   try {
-    // Check if it's a Neon database (starts with postgres:// or postgresql://)
-    const isNeonDb = connectionString.match(/^postgres(ql)?:\/\/.*neon\.tech/);
+    // For local Supabase PostgreSQL - use pg directly without any WebSocket
+    console.log("Connecting to PostgreSQL using node-postgres driver");
     
-    if (isNeonDb) {
-      // Configure WebSocket only for Neon connections
-      neonConfig.webSocketConstructor = ws;
-      
-      // Use Neon serverless driver
-      console.log("Using Neon serverless driver");
-      pool = new Pool({ connectionString });
-      db = drizzle({ client: pool, schema });
-    } else {
-      // Use regular node-postgres for local Supabase or other PostgreSQL
-      console.log("Using node-postgres driver for local PostgreSQL");
-      
-      // Create pool with extra logging
-      const poolConfig = { 
-        connectionString,
-        connectionTimeoutMillis: 5000, // 5 seconds
-        idleTimeoutMillis: 30000, // 30 seconds
-      };
-      console.log("Pool config:", JSON.stringify(poolConfig, null, 2));
-      
-      pool = new Pool(poolConfig);
-      
-      // Log pool events
-      pool.on('connect', (client) => {
-        console.log('New client connected to PostgreSQL');
-      });
-      
-      pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle PostgreSQL client', err);
-      });
-      
-      db = drizzleNode(pool, { schema });
-    }
+    // Create pool with standard configuration
+    const poolConfig = { 
+      connectionString,
+      ssl: false
+    };
+    
+    console.log("Pool config:", JSON.stringify(poolConfig, null, 2));
+    
+    pool = new Pool(poolConfig);
+    
+    // Log pool events
+    pool.on('connect', (client) => {
+      console.log('New client connected to PostgreSQL');
+    });
+    
+    pool.on('error', (err: Error) => {
+      console.error('Unexpected error on idle PostgreSQL client', err);
+    });
+    
+    db = drizzle(pool, { schema });
     
     // Test the connection
     console.log("Testing database connection...");
-    pool.query('SELECT NOW()', (err, res) => {
-      if (err) {
+    
+    // Use an async function with proper error handling for connection testing
+    (async () => {
+      try {
+        const result = await pool.query('SELECT NOW()');
+        console.log("Successfully connected to PostgreSQL database at:", result.rows[0].now);
+      } catch (err: any) {
         console.error("Database connection error:", err.message);
         console.error("Full error:", err);
-      } else {
-        console.log("Successfully connected to PostgreSQL database at:", res.rows[0].now);
       }
-    });
+    })();
     
     console.log("Database connection initialized");
   } catch (error) {

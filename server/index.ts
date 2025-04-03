@@ -92,7 +92,16 @@ nextApp.prepare().then(async () => {
 
   const httpServer = await registerRoutes(app);
 
-  app.all("*", (req, res) => {
+  // Set up Vite middleware for development
+  if (dev) {
+    await setupVite(app, httpServer);
+  } else {
+    // Serve static files in production
+    serveStatic(app);
+  }
+
+  // Add this wildcard route at the end to handle client-side routing properly
+  app.get("*", (req, res) => {
     return nextHandler(req, res);
   });
 
