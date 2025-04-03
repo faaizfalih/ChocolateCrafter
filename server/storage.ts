@@ -23,6 +23,10 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc } from "drizzle-orm";
+import pg from 'pg';
+const { Client } = pg;
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface IStorage {
   // User operations (from template)
@@ -44,6 +48,7 @@ export interface IStorage {
     product: Partial<InsertProduct>,
   ): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
+  deleteAllProducts(): Promise<boolean>;
 
   // Order operations
   createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
@@ -153,6 +158,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(products.id, id))
       .returning({ id: products.id });
     return result.length > 0;
+  }
+
+  async deleteAllProducts(): Promise<boolean> {
+    try {
+      await db.delete(products).execute();
+      return true;
+    } catch (error) {
+      console.error("Error deleting all products:", error);
+      return false;
+    }
   }
 
   // Order operations
@@ -527,11 +542,26 @@ export class MemStorage implements IStorage {
   }
 
   async deleteProduct(id: number): Promise<boolean> {
-    const product = this.products.get(id);
-    if (!product) return false;
+    if (!this.products.has(id)) {
+      return false;
+    }
 
+    const product = this.products.get(id)!;
     this.productSlugs.delete(product.slug);
-    return this.products.delete(id);
+    this.products.delete(id);
+    return true;
+  }
+
+  async deleteAllProducts(): Promise<boolean> {
+    try {
+      this.products.clear();
+      this.productSlugs.clear();
+      this.currentProductId = 1;
+      return true;
+    } catch (error) {
+      console.error("Error deleting all products from memory:", error);
+      return false;
+    }
   }
 
   // Order operations
@@ -651,3 +681,285 @@ export class MemStorage implements IStorage {
 export const storage = process.env.DATABASE_URL 
   ? new DatabaseStorage() 
   : new MemStorage();
+
+// Add direct PostgreSQL implementation for testing
+export class DirectPgStorage implements IStorage {
+  private client: Client;
+  private connected: boolean = false;
+
+  constructor() {
+    // Read the DATABASE_URL directly from the .env file
+    let databaseUrl: string | undefined;
+    try {
+      const envFilePath = path.resolve(process.cwd(), '.env');
+      const envFile = fs.readFileSync(envFilePath, 'utf8');
+      const match = envFile.match(/DATABASE_URL=([^\r\n]+)/);
+      if (match && match[1]) {
+        databaseUrl = match[1];
+        console.log("DirectPgStorage: Found DATABASE_URL in .env file");
+      }
+    } catch (error) {
+      console.error("DirectPgStorage: Error reading .env file:", error);
+    }
+
+    const connectionString = databaseUrl || process.env.DATABASE_URL || "";
+    this.client = new Client({
+      connectionString,
+      ssl: false,
+    });
+    
+    // Try to connect to the database
+    this.client.connect()
+      .then(() => {
+        console.log("DirectPgStorage: Successfully connected to PostgreSQL");
+        this.connected = true;
+      })
+      .catch(err => {
+        console.error("DirectPgStorage: Failed to connect to PostgreSQL:", err);
+        this.connected = false;
+      });
+  }
+
+  // User operations
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    if (!this.connected) return undefined;
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getUserByUsername:", error);
+      return undefined;
+    }
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    if (!this.connected) throw new Error("Database not connected");
+    try {
+      const result = await this.client.query(
+        'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *',
+        [user.username, user.password]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in createUser:", error);
+      throw error;
+    }
+  }
+
+  // Product operations
+  async getAllProducts(): Promise<Product[]> {
+    if (!this.connected) return [];
+    try {
+      const result = await this.client.query('SELECT * FROM products');
+      return result.rows;
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getAllProducts:", error);
+      return [];
+    }
+  }
+
+  async getProductById(id: number): Promise<Product | undefined> {
+    if (!this.connected) return undefined;
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM products WHERE id = $1',
+        [id]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getProductById:", error);
+      return undefined;
+    }
+  }
+
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    if (!this.connected) return undefined;
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM products WHERE slug = $1',
+        [slug]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getProductBySlug:", error);
+      return undefined;
+    }
+  }
+
+  async getFeaturedProducts(): Promise<Product[]> {
+    if (!this.connected) return [];
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM products WHERE featured = true'
+      );
+      return result.rows;
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getFeaturedProducts:", error);
+      return [];
+    }
+  }
+
+  async getBestSellerProducts(): Promise<Product[]> {
+    if (!this.connected) return [];
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM products WHERE best_seller = true'
+      );
+      return result.rows;
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getBestSellerProducts:", error);
+      return [];
+    }
+  }
+
+  async getSeasonalProducts(): Promise<Product[]> {
+    if (!this.connected) return [];
+    try {
+      const result = await this.client.query(
+        'SELECT * FROM products WHERE seasonal = true'
+      );
+      return result.rows;
+    } catch (error) {
+      console.error("DirectPgStorage: Error in getSeasonalProducts:", error);
+      return [];
+    }
+  }
+
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    if (!this.connected) throw new Error("Database not connected");
+    try {
+      const result = await this.client.query(
+        `INSERT INTO products(
+          name, slug, description, price, image_url, category, 
+          featured, best_seller, seasonal, stock
+        ) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        RETURNING *`,
+        [
+          insertProduct.name,
+          insertProduct.slug,
+          insertProduct.description,
+          insertProduct.price,
+          insertProduct.imageUrl,
+          insertProduct.category,
+          insertProduct.featured || false,
+          insertProduct.bestSeller || false,
+          insertProduct.seasonal || false,
+          insertProduct.stock || 0
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in createProduct:", error);
+      throw error;
+    }
+  }
+
+  async updateProduct(
+    id: number,
+    updates: Partial<InsertProduct>,
+  ): Promise<Product | undefined> {
+    if (!this.connected) return undefined;
+    try {
+      // Get the current product
+      const currentProductResult = await this.client.query(
+        'SELECT * FROM products WHERE id = $1',
+        [id]
+      );
+      
+      if (currentProductResult.rows.length === 0) {
+        return undefined;
+      }
+      
+      const currentProduct = currentProductResult.rows[0];
+      
+      // Update with new values or keep existing ones
+      const updatedProduct = {
+        name: updates.name ?? currentProduct.name,
+        slug: updates.slug ?? currentProduct.slug,
+        description: updates.description ?? currentProduct.description,
+        price: updates.price ?? currentProduct.price,
+        imageUrl: updates.imageUrl ?? currentProduct.image_url,
+        category: updates.category ?? currentProduct.category,
+        featured: updates.featured ?? currentProduct.featured,
+        bestSeller: updates.bestSeller ?? currentProduct.best_seller,
+        seasonal: updates.seasonal ?? currentProduct.seasonal,
+        stock: updates.stock ?? currentProduct.stock,
+      };
+      
+      const result = await this.client.query(
+        `UPDATE products 
+        SET name = $1, slug = $2, description = $3, price = $4, 
+            image_url = $5, category = $6, featured = $7, 
+            best_seller = $8, seasonal = $9, stock = $10
+        WHERE id = $11
+        RETURNING *`,
+        [
+          updatedProduct.name,
+          updatedProduct.slug,
+          updatedProduct.description,
+          updatedProduct.price,
+          updatedProduct.imageUrl,
+          updatedProduct.category,
+          updatedProduct.featured,
+          updatedProduct.bestSeller,
+          updatedProduct.seasonal,
+          updatedProduct.stock,
+          id
+        ]
+      );
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error("DirectPgStorage: Error in updateProduct:", error);
+      return undefined;
+    }
+  }
+
+  async deleteProduct(id: number): Promise<boolean> {
+    if (!this.connected) return false;
+    try {
+      const query = 'DELETE FROM products WHERE id = $1 RETURNING id';
+      const result = await this.client.query(query, [id]);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      return false;
+    }
+  }
+
+  async deleteAllProducts(): Promise<boolean> {
+    try {
+      const query = 'DELETE FROM products';
+      await this.client.query(query);
+      return true;
+    } catch (error) {
+      console.error('Error deleting all products:', error);
+      return false;
+    }
+  }
+
+  // Order operations
+  // ... implement other methods as needed ...
+}
+
+export const createStorage = (): IStorage => {
+  console.log("Creating storage implementation...");
+  
+  // Try to use the DirectPgStorage first
+  try {
+    const directStorage = new DirectPgStorage();
+    console.log("Using DirectPgStorage implementation");
+    return directStorage;
+  } catch (error) {
+    console.error("Failed to create DirectPgStorage:", error);
+    
+    // Fall back to configured storage
+    return db 
+      ? new DatabaseStorage() 
+      : new MemStorage();
+  }
+};

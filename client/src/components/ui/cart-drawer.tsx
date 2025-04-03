@@ -8,12 +8,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/cart-context";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { Link } from "wouter";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Product } from "@shared/schema";
+
+// Helper function to get image URL regardless of field name
+const getProductImageUrl = (product: Product) => {
+  // Handle both camelCase and snake_case field names
+  // @ts-ignore - TypeScript might not know about image_url field
+  const imageSource = product.imageUrl || product.image_url;
+  return getImageUrl(imageSource);
+};
 
 const CartDrawer = () => {
   const { items, isCartOpen, closeCart, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
@@ -92,56 +101,58 @@ const CartDrawer = () => {
             <div className="space-y-6 mb-8">
               {items.map(item => (
                 <div key={item.product.id} className="flex gap-4">
-                  <div className="w-20 h-20 flex-shrink-0">
-                    <img 
-                      src={item.product.imageUrl} 
-                      alt={item.product.name} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <Link href={`/product/${item.product.slug}`} className="font-medium hover:text-[#E09E69]">
-                        {item.product.name}
-                      </Link>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6" 
-                        onClick={() => removeFromCart(item.product.id)}
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Remove</span>
-                      </Button>
+                  <div className="flex items-start gap-3 py-3 border-b">
+                    <div className="w-16 h-16 bg-gray-100 overflow-hidden flex-shrink-0">
+                      <img 
+                        src={getProductImageUrl(item.product)} 
+                        alt={item.product.name} 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {formatPrice(item.product.price)}
-                    </p>
-                    
-                    <div className="flex items-center mt-2">
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-8 w-8" 
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      >
-                        <Minus className="h-3 w-3" />
-                        <span className="sr-only">Decrease quantity</span>
-                      </Button>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <Link href={`/product/${item.product.slug}`} className="font-medium hover:text-[#E09E69]">
+                          {item.product.name}
+                        </Link>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6" 
+                          onClick={() => removeFromCart(item.product.id)}
+                        >
+                          <X className="h-4 w-4" />
+                          <span className="sr-only">Remove</span>
+                        </Button>
+                      </div>
                       
-                      <span className="w-10 text-center">{item.quantity}</span>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {formatPrice(item.product.price)}
+                      </p>
                       
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-8 w-8" 
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      >
-                        <Plus className="h-3 w-3" />
-                        <span className="sr-only">Increase quantity</span>
-                      </Button>
+                      <div className="flex items-center mt-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="h-8 w-8" 
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                        >
+                          <Minus className="h-3 w-3" />
+                          <span className="sr-only">Decrease quantity</span>
+                        </Button>
+                        
+                        <span className="w-10 text-center">{item.quantity}</span>
+                        
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="h-8 w-8" 
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        >
+                          <Plus className="h-3 w-3" />
+                          <span className="sr-only">Increase quantity</span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

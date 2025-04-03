@@ -10,8 +10,10 @@ import OurStory from "@/pages/our-story";
 import FAQ from "@/pages/faq";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
+import Admin from "@/pages/admin";
 import CartDrawer from "@/components/ui/cart-drawer";
 import { CartProvider } from '@/context/cart-context';
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   return (
@@ -27,11 +29,13 @@ function App() {
           <Route path="/our-story" component={OurStory} />
           <Route path="/faq" component={FAQ} />
           <Route path="/contact" component={Contact} />
+          <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>
       <Footer />
       <WhatsappButton />
+      <Toaster />
     </CartProvider>
   );
 }

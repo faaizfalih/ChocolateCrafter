@@ -1,0 +1,11 @@
+-- This file is used by Supabase to initialize the database
+-- For now, we'll just reference our migration files since they already contain all our setup
+
+-- Table references
+-- products
+-- orders
+-- order_items
+-- corporate_inquiries
+-- contact_forms
+-- newsletters
+-- users 

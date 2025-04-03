@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Product } from '@shared/schema';
@@ -10,6 +9,14 @@ const CollectionShowcase = () => {
   });
 
   const featuredProduct = data?.products[0]; // Using the first seasonal product as featured
+
+  // Helper function to get image URL regardless of field name
+  const getProductImageUrl = (product: Product) => {
+    // Handle both camelCase and snake_case field names
+    // @ts-ignore - TypeScript might not know about image_url field
+    const imageSource = product.imageUrl || product.image_url;
+    return getImageUrl(imageSource);
+  };
 
   if (isLoading) {
     return (
@@ -47,7 +54,7 @@ const CollectionShowcase = () => {
     <section className="relative">
       {/* Full-width background image */}
       <div className="w-full h-96 md:h-[500px] bg-cover bg-center relative" 
-           style={{ backgroundImage: `url(${featuredProduct ? getImageUrl(featuredProduct.imageUrl) : ''})` }}>
+           style={{ backgroundImage: `url(${featuredProduct ? getProductImageUrl(featuredProduct) : ''})` }}>
         
         {/* Overlay removed */}
         
@@ -65,11 +72,23 @@ const CollectionShowcase = () => {
           <div className="flex flex-col md:flex-row gap-6 items-center">
             {/* Thumbnail product image */}
             <div className="w-full md:w-1/3">
-              <div className="aspect-square overflow-hidden rounded">
+              <div className="col-span-1 relative h-0 pb-[100%] overflow-hidden">
                 <img 
-                  src={featuredProduct ? getImageUrl(featuredProduct.imageUrl) : ''} 
-                  alt="Strawberry Sakura Shokupan" 
-                  className="w-full h-full object-cover"
+                  src={featuredProduct ? getProductImageUrl(featuredProduct) : ''} 
+                  alt={featuredProduct?.name || 'Featured product'} 
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    console.error(`Failed to load featured image: ${target.src}`);
+                    
+                    // Try attached_assets as fallback if not already using it
+                    if (featuredProduct && !target.src.includes('/attached_assets/') && !target.src.includes('/assets/General')) {
+                      target.src = `/attached_assets/${featuredProduct.imageUrl}`;
+                    } else if (!target.src.includes('/assets/General')) {
+                      // Final fallback
+                      target.src = '/assets/General Photo1.jpg';
+                    }
+                  }}
                 />
               </div>
             </div>

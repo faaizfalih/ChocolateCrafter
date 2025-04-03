@@ -51,9 +51,36 @@ export function getDeliveryTime(): Date {
 }
 
 export function getImageUrl(path: string): string {
-  if (path.startsWith("/public/attached_assets/")) return path.replace("/public", "");
-  if (path.startsWith("public/attached_assets/")) return `/${path.replace("public/", "")}`;
-  if (path.startsWith("/attached_assets/")) return path;
-  if (path.startsWith("attached_assets/")) return `/${path}`;
-  return `/attached_assets/${path}`;
+  console.log("Original image path:", path);
+  
+  // Safety check: If path is undefined or null, return a default image path
+  if (!path) {
+    console.log("Image path is undefined or null, using default");
+    return '/assets/General Photo1.jpg';
+  }
+  
+  // If the path already has a prefix, use it directly
+  if (path.startsWith("/") || path.startsWith("http") || path.startsWith("data:")) {
+    console.log("Using path as-is:", path);
+    return path;
+  }
+  
+  // For dynamically uploaded files (usually contain timestamp from multer)
+  if (path.includes("-") && /\d{13}-/.test(path)) { // Timestamp pattern from multer upload
+    const attachedPath = `/attached_assets/${path}`;
+    console.log("Using attached_assets path for uploaded file:", attachedPath);
+    return attachedPath;
+  }
+  
+  // For matcha specifically, use attached_assets
+  if (path.toLowerCase().includes("matcha")) {
+    const attachedPath = `/attached_assets/${path}`;
+    console.log("Using matcha path:", attachedPath);
+    return attachedPath;
+  }
+  
+  // For other images, try assets directory
+  const assetsPath = `/assets/${path}`;
+  console.log("Using assets path:", assetsPath);
+  return assetsPath;
 }
